@@ -6,8 +6,6 @@ A client-side Sudoku game built with vanilla JavaScript, HTML5, and CSS3. No dep
 
 🔗 [Play Sudoku](https://malida.github.io/sudoku-bmad/)
 
-*(Update this link after GitHub Pages deployment)*
-
 ## Technologies Used
 
 - **JavaScript (ES6+)** - Modern vanilla JavaScript with native modules
