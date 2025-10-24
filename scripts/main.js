@@ -5,6 +5,7 @@
 
 import * as state from './state.js';
 import * as ui from './ui.js';
+import * as validation from './validation.js';
 
 /**
  * Handles cell click events
@@ -46,6 +47,12 @@ function handleKeyPress(event) {
   // Handle numbers 1-9
   if (/^[1-9]$/.test(key)) {
     state.setCellValue(selected.row, selected.col, parseInt(key));
+
+    // Validate grid and update errors
+    const errors = validation.validateGrid(state.getGrid());
+    state.setErrors(errors);
+
+    // Re-render with updated errors
     ui.renderGrid(state.getGrid(), state.getErrors(), state.getInitialGrid());
     // Restore selection after re-render
     ui.highlightSelectedCell(selected.row, selected.col);
@@ -54,6 +61,12 @@ function handleKeyPress(event) {
   else if (key === 'Backspace' || key === 'Delete' || key === '0') {
     event.preventDefault(); // Prevent browser navigation on Backspace
     state.clearCell(selected.row, selected.col);
+
+    // Validate grid and update errors
+    const errors = validation.validateGrid(state.getGrid());
+    state.setErrors(errors);
+
+    // Re-render with updated errors
     ui.renderGrid(state.getGrid(), state.getErrors(), state.getInitialGrid());
     // Restore selection after re-render
     ui.highlightSelectedCell(selected.row, selected.col);

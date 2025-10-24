@@ -110,7 +110,8 @@ body {
 
 /* Error Cell */
 .cell.error {
-  background-color: #fee2e2;
+  background-color: #ffebee !important;
+  color: #c62828 !important;
   border-color: #ef4444;
 }
 

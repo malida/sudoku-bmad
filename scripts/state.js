@@ -79,6 +79,14 @@ export function getErrors() {
 }
 
 /**
+ * Sets the error set for the grid
+ * @param {Set<string>} errorSet - Set of error cell coordinates in "row,col" format
+ */
+export function setErrors(errorSet) {
+  SudokuGrid.errors = errorSet;
+}
+
+/**
  * Sets the selected cell
  * @param {number} row - Row index (0-8)
  * @param {number} col - Column index (0-8)
