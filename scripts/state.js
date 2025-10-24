@@ -25,6 +25,9 @@ const SudokuGrid = {
   isSolved: false
 };
 
+// Selected cell state
+let selectedCell = null; // { row: number, col: number } | null
+
 /**
  * Returns the current grid
  * @returns {number[][]} 9x9 array representing current grid state
@@ -73,6 +76,72 @@ export function loadPuzzle(grid) {
  */
 export function getErrors() {
   return SudokuGrid.errors;
+}
+
+/**
+ * Sets the selected cell
+ * @param {number} row - Row index (0-8)
+ * @param {number} col - Column index (0-8)
+ */
+export function setSelectedCell(row, col) {
+  selectedCell = { row, col };
+}
+
+/**
+ * Returns the currently selected cell
+ * @returns {{row: number, col: number} | null} Selected cell coordinates or null
+ */
+export function getSelectedCell() {
+  return selectedCell;
+}
+
+/**
+ * Clears the cell selection
+ */
+export function clearSelection() {
+  selectedCell = null;
+}
+
+/**
+ * Checks if a cell is a given clue (immutable)
+ * @param {number} row - Row index (0-8)
+ * @param {number} col - Column index (0-8)
+ * @returns {boolean} True if cell is a given clue
+ */
+export function isGivenClue(row, col) {
+  if (row < 0 || row > 8 || col < 0 || col > 8) {
+    return false;
+  }
+  return SudokuGrid.initialGrid[row][col] !== 0;
+}
+
+/**
+ * Sets the value of a cell (only if not a given clue)
+ * @param {number} row - Row index (0-8)
+ * @param {number} col - Column index (0-8)
+ * @param {number} value - Value to set (1-9)
+ */
+export function setCellValue(row, col, value) {
+  if (row < 0 || row > 8 || col < 0 || col > 8) {
+    return;
+  }
+  if (!isGivenClue(row, col)) {
+    SudokuGrid.grid[row][col] = value;
+  }
+}
+
+/**
+ * Clears a cell (sets to 0, only if not a given clue)
+ * @param {number} row - Row index (0-8)
+ * @param {number} col - Column index (0-8)
+ */
+export function clearCell(row, col) {
+  if (row < 0 || row > 8 || col < 0 || col > 8) {
+    return;
+  }
+  if (!isGivenClue(row, col)) {
+    SudokuGrid.grid[row][col] = 0;
+  }
 }
 
 // Initialize state with hardcoded puzzle

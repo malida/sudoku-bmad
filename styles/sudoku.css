@@ -102,7 +102,10 @@ body {
 
 /* Selected Cell */
 .cell.selected {
-  background-color: #bfdbfe;
+  background-color: #dbeafe;
+  outline: 2px solid #2563eb;
+  outline-offset: -2px;
+  z-index: 1;
 }
 
 /* Error Cell */

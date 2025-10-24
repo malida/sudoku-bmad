@@ -22,6 +22,9 @@ function renderCell(row, col, value, isGiven, hasError) {
 
   if (isGiven) {
     cell.classList.add('given-clue');
+  } else if (value !== 0) {
+    // User-entered value (not a given clue but has a value)
+    cell.classList.add('user-entry');
   }
 
   if (hasError) {
@@ -89,16 +92,21 @@ export function showMessage(text, type = 'info') {
 }
 
 /**
+ * Clears all cell selections
+ */
+export function clearSelection() {
+  const selectedCells = document.querySelectorAll('.cell.selected');
+  selectedCells.forEach(cell => cell.classList.remove('selected'));
+}
+
+/**
  * Highlights the selected cell
  * @param {number} row - Row index (0-8)
  * @param {number} col - Column index (0-8)
  */
 export function highlightSelectedCell(row, col) {
   // Remove previous selection
-  const previousSelected = document.querySelector('.cell.selected');
-  if (previousSelected) {
-    previousSelected.classList.remove('selected');
-  }
+  clearSelection();
 
   // Add selection to new cell
   const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
