@@ -75,6 +75,46 @@ function handleKeyPress(event) {
 }
 
 /**
+ * Handles Check Solution button click
+ */
+function handleCheckSolution() {
+  // Check if grid is complete
+  if (!state.isGridComplete()) {
+    ui.showMessage('Puzzle is incomplete', 'info');
+    return;
+  }
+
+  // Grid is complete, check for errors
+  if (state.getErrors().size > 0) {
+    ui.showMessage('Puzzle contains errors', 'error');
+    return;
+  }
+
+  // Correct solution!
+  ui.showMessage('Congratulations! Puzzle solved!', 'success');
+}
+
+/**
+ * Handles New Puzzle button click
+ */
+function handleNewPuzzle() {
+  // Get next puzzle
+  const newPuzzle = state.getNextPuzzle();
+
+  // Load new puzzle (this also clears selection)
+  state.loadPuzzle(newPuzzle);
+
+  // Clear UI selection
+  ui.clearSelection();
+
+  // Re-render grid with new puzzle
+  ui.renderGrid(state.getGrid(), state.getErrors(), state.getInitialGrid());
+
+  // Show confirmation message
+  ui.showMessage('New puzzle loaded!', 'info');
+}
+
+/**
  * Initializes the application
  */
 function init() {
@@ -93,6 +133,17 @@ function init() {
   }
 
   document.addEventListener('keydown', handleKeyPress);
+
+  // Attach button listeners
+  const checkSolutionBtn = document.getElementById('check-solution-btn');
+  if (checkSolutionBtn) {
+    checkSolutionBtn.addEventListener('click', handleCheckSolution);
+  }
+
+  const newPuzzleBtn = document.getElementById('new-puzzle-btn');
+  if (newPuzzleBtn) {
+    newPuzzleBtn.addEventListener('click', handleNewPuzzle);
+  }
 }
 
 // Initialize application when DOM is ready

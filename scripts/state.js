@@ -3,18 +3,48 @@
  * Manages the Sudoku game state including grid data, errors, and completion status
  */
 
-// Hardcoded valid Sudoku puzzle with ~27 given clues
-const HARDCODED_PUZZLE = [
-  [5, 3, 0, 0, 7, 0, 0, 0, 0],
-  [6, 0, 0, 1, 9, 5, 0, 0, 0],
-  [0, 9, 8, 0, 0, 0, 0, 6, 0],
-  [8, 0, 0, 0, 6, 0, 0, 0, 3],
-  [4, 0, 0, 8, 0, 3, 0, 0, 1],
-  [7, 0, 0, 0, 2, 0, 0, 0, 6],
-  [0, 6, 0, 0, 0, 0, 2, 8, 0],
-  [0, 0, 0, 4, 1, 9, 0, 0, 5],
-  [0, 0, 0, 0, 8, 0, 0, 7, 9]
+// Hardcoded valid Sudoku puzzles
+const HARDCODED_PUZZLES = [
+  // Puzzle 1
+  [
+    [5, 3, 0, 0, 7, 0, 0, 0, 0],
+    [6, 0, 0, 1, 9, 5, 0, 0, 0],
+    [0, 9, 8, 0, 0, 0, 0, 6, 0],
+    [8, 0, 0, 0, 6, 0, 0, 0, 3],
+    [4, 0, 0, 8, 0, 3, 0, 0, 1],
+    [7, 0, 0, 0, 2, 0, 0, 0, 6],
+    [0, 6, 0, 0, 0, 0, 2, 8, 0],
+    [0, 0, 0, 4, 1, 9, 0, 0, 5],
+    [0, 0, 0, 0, 8, 0, 0, 7, 9]
+  ],
+  // Puzzle 2
+  [
+    [0, 0, 9, 7, 4, 8, 0, 0, 0],
+    [7, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 2, 0, 1, 0, 9, 0, 0, 0],
+    [0, 0, 7, 0, 0, 0, 2, 4, 0],
+    [0, 6, 4, 0, 1, 0, 5, 9, 0],
+    [0, 9, 8, 0, 0, 0, 3, 0, 0],
+    [0, 0, 0, 8, 0, 3, 0, 2, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 6],
+    [0, 0, 0, 2, 7, 5, 9, 0, 0]
+  ],
+  // Puzzle 3
+  [
+    [0, 0, 0, 6, 0, 0, 4, 0, 0],
+    [7, 0, 0, 0, 0, 3, 6, 0, 0],
+    [0, 0, 0, 0, 9, 1, 0, 8, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 5, 0, 1, 8, 0, 0, 0, 3],
+    [0, 0, 0, 3, 0, 6, 0, 4, 5],
+    [0, 4, 0, 2, 0, 0, 0, 6, 0],
+    [9, 0, 3, 0, 0, 0, 0, 0, 0],
+    [0, 2, 0, 0, 0, 0, 1, 0, 0]
+  ]
 ];
+
+// Track current puzzle index
+let currentPuzzleIndex = 0;
 
 // Game state object
 const SudokuGrid = {
@@ -68,6 +98,7 @@ export function loadPuzzle(grid) {
   SudokuGrid.errors = new Set();
   SudokuGrid.isComplete = false;
   SudokuGrid.isSolved = false;
+  selectedCell = null; // Clear selection on new puzzle
 }
 
 /**
@@ -152,5 +183,37 @@ export function clearCell(row, col) {
   }
 }
 
-// Initialize state with hardcoded puzzle
-loadPuzzle(HARDCODED_PUZZLE);
+/**
+ * Checks if the grid is complete (all cells filled)
+ * @returns {boolean} True if no empty cells exist
+ */
+export function isGridComplete() {
+  for (let row = 0; row < 9; row++) {
+    for (let col = 0; col < 9; col++) {
+      if (SudokuGrid.grid[row][col] === 0) {
+        return false; // Found empty cell
+      }
+    }
+  }
+  return true; // No empty cells
+}
+
+/**
+ * Checks if the grid is correctly solved (complete and no errors)
+ * @returns {boolean} True if puzzle is solved correctly
+ */
+export function isGridSolved() {
+  return isGridComplete() && SudokuGrid.errors.size === 0;
+}
+
+/**
+ * Gets the next puzzle in sequence (cycles through available puzzles)
+ * @returns {number[][]} The next puzzle grid
+ */
+export function getNextPuzzle() {
+  currentPuzzleIndex = (currentPuzzleIndex + 1) % HARDCODED_PUZZLES.length;
+  return HARDCODED_PUZZLES[currentPuzzleIndex];
+}
+
+// Initialize state with first hardcoded puzzle
+loadPuzzle(HARDCODED_PUZZLES[0]);

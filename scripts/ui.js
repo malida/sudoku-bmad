@@ -92,6 +92,20 @@ export function showMessage(text, type = 'info') {
 }
 
 /**
+ * Hides the message element
+ */
+export function hideMessage() {
+  const messageEl = document.getElementById('message');
+
+  if (!messageEl) {
+    console.error('Message element not found');
+    return;
+  }
+
+  messageEl.classList.add('hidden');
+}
+
+/**
  * Clears all cell selections
  */
 export function clearSelection() {
