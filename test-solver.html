@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Solver Tests</title>
+</head>
+<body>
+  <h1>Sudoku Solver Tests</h1>
+  <div id="results"></div>
+
+  <script type="module">
+    import { solvePuzzle, countSolutions, hasUniqueSolution } from './scripts/generator.js';
+
+    const results = [];
+
+    function log(message) {
+      console.log(message);
+      results.push(message);
+      document.getElementById('results').innerHTML += `<p>${message}</p>`;
+    }
+
+    // Test 1: Solve incomplete puzzle from Story 1.5
+    log("=== Test 1: Solve Incomplete Puzzle ===");
+    const incompletePuzzle = [
+      [5, 3, 0, 0, 7, 0, 0, 0, 0],
+      [6, 0, 0, 1, 9, 5, 0, 0, 0],
+      [0, 9, 8, 0, 0, 0, 0, 6, 0],
+      [8, 0, 0, 0, 6, 0, 0, 0, 3],
+      [4, 0, 0, 8, 0, 3, 0, 0, 1],
+      [7, 0, 0, 0, 2, 0, 0, 0, 6],
+      [0, 6, 0, 0, 0, 0, 2, 8, 0],
+      [0, 0, 0, 4, 1, 9, 0, 0, 5],
+      [0, 0, 0, 0, 8, 0, 0, 7, 9]
+    ];
+
+    console.time("Test 1 - Solve Time");
+    const solved1 = solvePuzzle(incompletePuzzle);
+    console.timeEnd("Test 1 - Solve Time");
+
+    if (solved1) {
+      log("✓ Puzzle solved successfully");
+      log(`Solution: ${JSON.stringify(solved1[0])}`);
+
+      // Verify no zeros remain
+      let hasZeros = false;
+      for (let r = 0; r < 9; r++) {
+        for (let c = 0; c < 9; c++) {
+          if (solved1[r][c] === 0) hasZeros = true;
+        }
+      }
+      log(hasZeros ? "✗ Solution has empty cells" : "✓ Solution is complete");
+    } else {
+      log("✗ Failed to solve puzzle");
+    }
+
+    // Test 2: Solve empty grid
+    log("\n=== Test 2: Solve Empty Grid ===");
+    const emptyGrid = Array(9).fill(null).map(() => Array(9).fill(0));
+
+    console.time("Test 2 - Empty Grid Solve Time");
+    const solved2 = solvePuzzle(emptyGrid);
+    console.timeEnd("Test 2 - Empty Grid Solve Time");
+
+    if (solved2) {
+      log("✓ Empty grid solved successfully");
+      log(`First row: ${JSON.stringify(solved2[0])}`);
+    } else {
+      log("✗ Failed to solve empty grid");
+    }
+
+    // Test 3: Unsolvable puzzle (conflicting clues)
+    log("\n=== Test 3: Unsolvable Puzzle ===");
+    const unsolvable = [
+      [5, 5, 0, 0, 0, 0, 0, 0, 0], // Two 5s in same row
+      [0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0]
+    ];
+
+    console.time("Test 3 - Unsolvable Solve Time");
+    const solved3 = solvePuzzle(unsolvable);
+    console.timeEnd("Test 3 - Unsolvable Solve Time");
+
+    log(solved3 === null ? "✓ Correctly returned null for unsolvable" : "✗ Should return null");
+
+    // Test 4: Uniqueness detection - unique solution
+    log("\n=== Test 4: Unique Solution Detection ===");
+    console.time("Test 4 - Uniqueness Check Time");
+    const isUnique = hasUniqueSolution(incompletePuzzle);
+    console.timeEnd("Test 4 - Uniqueness Check Time");
+
+    log(isUnique ? "✓ Correctly detected unique solution" : "✗ Should be unique");
+
+    // Test 5: Uniqueness detection - multiple solutions
+    log("\n=== Test 5: Multiple Solutions Detection ===");
+    const underConstrained = [
+      [5, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0]
+    ];
+
+    console.time("Test 5 - Multiple Solutions Check Time");
+    const isUnique2 = hasUniqueSolution(underConstrained);
+    console.timeEnd("Test 5 - Multiple Solutions Check Time");
+
+    log(!isUnique2 ? "✓ Correctly detected multiple solutions" : "✗ Should not be unique");
+
+    // Test 6: countSolutions early exit
+    log("\n=== Test 6: countSolutions Performance ===");
+    console.time("Test 6 - countSolutions Time");
+    const count = countSolutions(underConstrained, 2);
+    console.timeEnd("Test 6 - countSolutions Time");
+
+    log(`Count: ${count}`);
+    log(count === 2 ? "✓ Early exit worked (stopped at 2)" : `Note: Found ${count} solutions`);
+
+    // Test 7: Deep copy protection
+    log("\n=== Test 7: Deep Copy Protection ===");
+    const original = [
+      [5, 3, 0, 0, 7, 0, 0, 0, 0],
+      [6, 0, 0, 1, 9, 5, 0, 0, 0],
+      [0, 9, 8, 0, 0, 0, 0, 6, 0],
+      [8, 0, 0, 0, 6, 0, 0, 0, 3],
+      [4, 0, 0, 8, 0, 3, 0, 0, 1],
+      [7, 0, 0, 0, 2, 0, 0, 0, 6],
+      [0, 6, 0, 0, 0, 0, 2, 8, 0],
+      [0, 0, 0, 4, 1, 9, 0, 0, 5],
+      [0, 0, 0, 0, 8, 0, 0, 7, 9]
+    ];
+    const beforeSolve = JSON.stringify(original);
+    solvePuzzle(original);
+    const afterSolve = JSON.stringify(original);
+
+    log(beforeSolve === afterSolve ? "✓ Original grid unchanged" : "✗ Original grid was mutated");
+
+    // Test 8: Performance benchmark
+    log("\n=== Test 8: Performance Benchmark ===");
+    const puzzles = [
+      incompletePuzzle,
+      emptyGrid,
+      [
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 3, 0, 8, 5],
+        [0, 0, 1, 0, 2, 0, 0, 0, 0],
+        [0, 0, 0, 5, 0, 7, 0, 0, 0],
+        [0, 0, 4, 0, 0, 0, 1, 0, 0],
+        [0, 9, 0, 0, 0, 0, 0, 0, 0],
+        [5, 0, 0, 0, 0, 0, 0, 7, 3],
+        [0, 0, 2, 0, 1, 0, 0, 0, 0],
+        [0, 0, 0, 0, 4, 0, 0, 0, 9]
+      ]
+    ];
+
+    let allUnder1Second = true;
+    puzzles.forEach((puzzle, idx) => {
+      const start = performance.now();
+      solvePuzzle(puzzle);
+      const end = performance.now();
+      const time = end - start;
+      log(`Puzzle ${idx + 1}: ${time.toFixed(2)}ms`);
+      if (time > 1000) allUnder1Second = false;
+    });
+
+    log(allUnder1Second ? "✓ All puzzles solved in < 1 second" : "✗ Some puzzles exceeded 1 second");
+
+    log("\n=== All Tests Complete ===");
+  </script>
+</body>
+</html>
