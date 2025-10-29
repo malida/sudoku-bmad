@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Puzzle Generation Tests</title>
+  <style>
+    body { font-family: monospace; padding: 20px; max-width: 800px; }
+    .test { margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 4px; }
+    .pass { background: #e8f5e9; border-color: #2e7d32; }
+    .fail { background: #ffebee; border-color: #c62828; }
+    .grid { font-family: monospace; font-size: 12px; line-height: 1.4; }
+    h2 { margin-top: 0; }
+    .metric { margin: 5px 0; }
+  </style>
+</head>
+<body>
+  <h1>Story 2.2: Puzzle Generation Algorithm Tests</h1>
+  <div id="results"></div>
+
+  <script type="module">
+    import { generatePuzzle, solvePuzzle, hasUniqueSolution } from './scripts/generator.js';
+
+    const results = document.getElementById('results');
+
+    function addResult(testName, passed, details) {
+      const div = document.createElement('div');
+      div.className = `test ${passed ? 'pass' : 'fail'}`;
+      div.innerHTML = `
+        <h2>${passed ? '✓' : '✗'} ${testName}</h2>
+        <div>${details}</div>
+      `;
+      results.appendChild(div);
+    }
+
+    function countClues(grid) {
+      return grid.flat().filter(n => n !== 0).length;
+    }
+
+    function formatGrid(grid) {
+      return grid.map(row => row.join(' ')).join('\n');
+    }
+
+    // Test 1: Basic Generation
+    console.log('Test 1: Basic Generation');
+    try {
+      const puzzle = generatePuzzle();
+      const clues = countClues(puzzle);
+      const isValid = puzzle.length === 9 && puzzle.every(row => row.length === 9);
+      const hasOnlyValidNumbers = puzzle.flat().every(n => n >= 0 && n <= 9);
+
+      addResult(
+        'Test 1: Basic Generation (AC: 1, 8)',
+        isValid && hasOnlyValidNumbers && clues >= 40 && clues <= 50,
+        `<div class="metric">Grid dimensions: ${puzzle.length}x${puzzle[0].length} ${isValid ? '✓' : '✗'}</div>
+         <div class="metric">Valid numbers (0-9): ${hasOnlyValidNumbers ? '✓' : '✗'}</div>
+         <div class="metric">Clue count: ${clues} (target: 40-50) ${clues >= 40 && clues <= 50 ? '✓' : '✗'}</div>
+         <div class="metric">First row: [${puzzle[0].join(', ')}]</div>`
+      );
+    } catch (error) {
+      addResult('Test 1: Basic Generation', false, `Error: ${error.message}`);
+    }
+
+    // Test 2: Performance - Generate 10 puzzles
+    console.log('Test 2: Performance Test');
+    try {
+      const times = [];
+      for (let i = 0; i < 10; i++) {
+        const start = Date.now();
+        generatePuzzle();
+        const elapsed = Date.now() - start;
+        times.push(elapsed);
+        console.log(`  Puzzle ${i + 1}: ${elapsed}ms`);
+      }
+
+      const maxTime = Math.max(...times);
+      const avgTime = times.reduce((a, b) => a + b, 0) / times.length;
+      const allUnder2s = times.every(t => t < 2000);
+
+      addResult(
+        'Test 2: Performance - 10 Puzzles (AC: 7)',
+        allUnder2s,
+        `<div class="metric">Average time: ${avgTime.toFixed(0)}ms</div>
+         <div class="metric">Max time: ${maxTime}ms</div>
+         <div class="metric">All under 2000ms: ${allUnder2s ? '✓' : '✗'}</div>
+         <div class="metric">Individual times: ${times.map(t => t + 'ms').join(', ')}</div>`
+      );
+    } catch (error) {
+      addResult('Test 2: Performance', false, `Error: ${error.message}`);
+    }
+
+    // Test 3: Puzzle Variety
+    console.log('Test 3: Puzzle Variety');
+    try {
+      const puzzles = [];
+      for (let i = 0; i < 5; i++) {
+        puzzles.push(generatePuzzle());
+      }
+
+      const stringified = puzzles.map(p => JSON.stringify(p));
+      const allUnique = new Set(stringified).size === 5;
+
+      addResult(
+        'Test 3: Puzzle Variety (AC: 2)',
+        allUnique,
+        `<div class="metric">Generated 5 puzzles</div>
+         <div class="metric">All different: ${allUnique ? '✓' : '✗'}</div>
+         <div class="metric">Puzzle 1 first row: [${puzzles[0][0].join(', ')}]</div>
+         <div class="metric">Puzzle 2 first row: [${puzzles[1][0].join(', ')}]</div>
+         <div class="metric">Puzzle 3 first row: [${puzzles[2][0].join(', ')}]</div>`
+      );
+    } catch (error) {
+      addResult('Test 3: Puzzle Variety', false, `Error: ${error.message}`);
+    }
+
+    // Test 4: Solvability
+    console.log('Test 4: Solvability');
+    try {
+      const puzzles = [];
+      const solvable = [];
+      for (let i = 0; i < 5; i++) {
+        const puzzle = generatePuzzle();
+        puzzles.push(puzzle);
+        const copy = JSON.parse(JSON.stringify(puzzle));
+        const solution = solvePuzzle(copy);
+        const isSolved = solution !== null && solution.flat().every(n => n !== 0);
+        solvable.push(isSolved);
+        console.log(`  Puzzle ${i + 1}: ${isSolved ? 'Solvable ✓' : 'Not solvable ✗'}`);
+      }
+
+      const allSolvable = solvable.every(s => s);
+
+      addResult(
+        'Test 4: Solvability (AC: 9)',
+        allSolvable,
+        `<div class="metric">Tested 5 puzzles</div>
+         <div class="metric">All solvable: ${allSolvable ? '✓' : '✗'}</div>
+         <div class="metric">Results: ${solvable.map((s, i) => `P${i + 1}:${s ? '✓' : '✗'}`).join(', ')}</div>`
+      );
+    } catch (error) {
+      addResult('Test 4: Solvability', false, `Error: ${error.message}`);
+    }
+
+    // Test 5: Unique Solution
+    console.log('Test 5: Unique Solution');
+    try {
+      const results = [];
+      for (let i = 0; i < 5; i++) {
+        const puzzle = generatePuzzle();
+        const isUnique = hasUniqueSolution(puzzle);
+        results.push(isUnique);
+        console.log(`  Puzzle ${i + 1}: ${isUnique ? 'Unique ✓' : 'Not unique ✗'}`);
+      }
+
+      const allUnique = results.every(r => r);
+
+      addResult(
+        'Test 5: Unique Solution (AC: 10)',
+        allUnique,
+        `<div class="metric">Tested 5 puzzles</div>
+         <div class="metric">All have unique solutions: ${allUnique ? '✓' : '✗'}</div>
+         <div class="metric">Results: ${results.map((r, i) => `P${i + 1}:${r ? '✓' : '✗'}`).join(', ')}</div>`
+      );
+    } catch (error) {
+      addResult('Test 5: Unique Solution', false, `Error: ${error.message}`);
+    }
+
+    // Test 6: Clue Count Range
+    console.log('Test 6: Clue Count Range');
+    try {
+      const clueCounts = [];
+      for (let i = 0; i < 10; i++) {
+        const puzzle = generatePuzzle();
+        const clues = countClues(puzzle);
+        clueCounts.push(clues);
+      }
+
+      const min = Math.min(...clueCounts);
+      const max = Math.max(...clueCounts);
+      const avg = clueCounts.reduce((a, b) => a + b, 0) / clueCounts.length;
+      const allInRange = clueCounts.every(c => c >= 40 && c <= 50);
+
+      addResult(
+        'Test 6: Clue Count Range (AC: 4)',
+        allInRange,
+        `<div class="metric">Min clues: ${min} (target: ≥40) ${min >= 40 ? '✓' : '✗'}</div>
+         <div class="metric">Max clues: ${max} (target: ≤50) ${max <= 50 ? '✓' : '✗'}</div>
+         <div class="metric">Average: ${avg.toFixed(1)}</div>
+         <div class="metric">All in range (40-50): ${allInRange ? '✓' : '✗'}</div>
+         <div class="metric">Counts: ${clueCounts.join(', ')}</div>`
+      );
+    } catch (error) {
+      addResult('Test 6: Clue Count Range', false, `Error: ${error.message}`);
+    }
+
+    // Test 7: Sample Generated Puzzle Display
+    console.log('Test 7: Sample Puzzle Display');
+    try {
+      const puzzle = generatePuzzle();
+      const clues = countClues(puzzle);
+
+      addResult(
+        'Test 7: Sample Generated Puzzle',
+        true,
+        `<div class="metric">Clues: ${clues}</div>
+         <pre class="grid">${formatGrid(puzzle)}</pre>`
+      );
+    } catch (error) {
+      addResult('Test 7: Sample Puzzle', false, `Error: ${error.message}`);
+    }
+
+    console.log('All tests complete!');
+  </script>
+</body>
+</html>
