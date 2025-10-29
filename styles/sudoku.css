@@ -185,6 +185,55 @@ body {
   color: #991b1b;
 }
 
+/* Number Pad */
+.number-pad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  width: 100%;
+  max-width: 500px;
+  margin-top: 20px;
+}
+
+.number-pad-btn {
+  padding: 12px;
+  min-height: 48px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  border: 2px solid #2563eb;
+  border-radius: 6px;
+  background-color: white;
+  color: #2563eb;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.number-pad-btn:hover {
+  background-color: #dbeafe;
+}
+
+.number-pad-btn:active {
+  transform: scale(0.98);
+  background-color: #2563eb;
+  color: white;
+}
+
+.number-pad-btn-clear {
+  grid-column: 1 / -1;
+  background-color: #10b981;
+  color: white;
+  border-color: #10b981;
+}
+
+.number-pad-btn-clear:hover {
+  background-color: #059669;
+}
+
+.number-pad-btn-clear:active {
+  background-color: #047857;
+}
+
 /* Responsive Design */
 @media (max-width: 640px) {
   .app-container {
@@ -202,5 +251,14 @@ body {
   .btn {
     padding: 10px 20px;
     font-size: 0.9rem;
+  }
+
+  .number-pad {
+    gap: 8px;
+  }
+
+  .number-pad-btn {
+    min-height: 52px;
+    font-size: 1.2rem;
   }
 }

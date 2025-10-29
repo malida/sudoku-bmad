@@ -76,6 +76,40 @@ function handleKeyPress(event) {
 }
 
 /**
+ * Handles number pad button clicks
+ * @param {Event} event - Click event
+ */
+function handleNumberPadClick(event) {
+  // Event delegation - only handle button clicks
+  if (!event.target.classList.contains('number-pad-btn')) {
+    return;
+  }
+
+  const selected = state.getSelectedCell();
+
+  // No cell selected or given clue selected - ignore
+  if (!selected || state.isGivenClue(selected.row, selected.col)) {
+    return;
+  }
+
+  const buttonValue = event.target.dataset.value;
+
+  if (buttonValue === 'clear') {
+    // Clear cell
+    state.clearCell(selected.row, selected.col);
+  } else {
+    // Number 1-9
+    state.setCellValue(selected.row, selected.col, parseInt(buttonValue));
+  }
+
+  // Validate and re-render (same as keyboard handler)
+  const errors = validation.validateGrid(state.getGrid());
+  state.setErrors(errors);
+  ui.renderGrid(state.getGrid(), state.getErrors(), state.getInitialGrid());
+  ui.highlightSelectedCell(selected.row, selected.col);
+}
+
+/**
  * Handles Check Solution button click
  */
 function handleCheckSolution() {
@@ -163,6 +197,11 @@ function init() {
   const newPuzzleBtn = document.getElementById('new-puzzle-btn');
   if (newPuzzleBtn) {
     newPuzzleBtn.addEventListener('click', handleNewPuzzle);
+  }
+
+  const numberPad = document.getElementById('number-pad');
+  if (numberPad) {
+    numberPad.addEventListener('click', handleNumberPadClick);
   }
 
   // Generate and load initial puzzle
