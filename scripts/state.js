@@ -3,49 +3,6 @@
  * Manages the Sudoku game state including grid data, errors, and completion status
  */
 
-// Hardcoded valid Sudoku puzzles
-const HARDCODED_PUZZLES = [
-  // Puzzle 1
-  [
-    [5, 3, 0, 0, 7, 0, 0, 0, 0],
-    [6, 0, 0, 1, 9, 5, 0, 0, 0],
-    [0, 9, 8, 0, 0, 0, 0, 6, 0],
-    [8, 0, 0, 0, 6, 0, 0, 0, 3],
-    [4, 0, 0, 8, 0, 3, 0, 0, 1],
-    [7, 0, 0, 0, 2, 0, 0, 0, 6],
-    [0, 6, 0, 0, 0, 0, 2, 8, 0],
-    [0, 0, 0, 4, 1, 9, 0, 0, 5],
-    [0, 0, 0, 0, 8, 0, 0, 7, 9]
-  ],
-  // Puzzle 2
-  [
-    [0, 0, 9, 7, 4, 8, 0, 0, 0],
-    [7, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 2, 0, 1, 0, 9, 0, 0, 0],
-    [0, 0, 7, 0, 0, 0, 2, 4, 0],
-    [0, 6, 4, 0, 1, 0, 5, 9, 0],
-    [0, 9, 8, 0, 0, 0, 3, 0, 0],
-    [0, 0, 0, 8, 0, 3, 0, 2, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 6],
-    [0, 0, 0, 2, 7, 5, 9, 0, 0]
-  ],
-  // Puzzle 3
-  [
-    [0, 0, 0, 6, 0, 0, 4, 0, 0],
-    [7, 0, 0, 0, 0, 3, 6, 0, 0],
-    [0, 0, 0, 0, 9, 1, 0, 8, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 5, 0, 1, 8, 0, 0, 0, 3],
-    [0, 0, 0, 3, 0, 6, 0, 4, 5],
-    [0, 4, 0, 2, 0, 0, 0, 6, 0],
-    [9, 0, 3, 0, 0, 0, 0, 0, 0],
-    [0, 2, 0, 0, 0, 0, 1, 0, 0]
-  ]
-];
-
-// Track current puzzle index
-let currentPuzzleIndex = 0;
-
 // Game state object
 const SudokuGrid = {
   grid: [],
@@ -205,15 +162,3 @@ export function isGridComplete() {
 export function isGridSolved() {
   return isGridComplete() && SudokuGrid.errors.size === 0;
 }
-
-/**
- * Gets the next puzzle in sequence (cycles through available puzzles)
- * @returns {number[][]} The next puzzle grid
- */
-export function getNextPuzzle() {
-  currentPuzzleIndex = (currentPuzzleIndex + 1) % HARDCODED_PUZZLES.length;
-  return HARDCODED_PUZZLES[currentPuzzleIndex];
-}
-
-// Initialize state with first hardcoded puzzle
-loadPuzzle(HARDCODED_PUZZLES[0]);

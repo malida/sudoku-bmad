@@ -6,6 +6,7 @@
 import * as state from './state.js';
 import * as ui from './ui.js';
 import * as validation from './validation.js';
+import * as generator from './generator.js';
 
 /**
  * Handles cell click events
@@ -98,34 +99,53 @@ function handleCheckSolution() {
  * Handles New Puzzle button click
  */
 function handleNewPuzzle() {
-  // Get next puzzle
-  const newPuzzle = state.getNextPuzzle();
+  // Show loading message
+  ui.showMessage('Generating puzzle...', 'info');
 
-  // Load new puzzle (this also clears selection)
-  state.loadPuzzle(newPuzzle);
+  try {
+    // Generate new puzzle
+    const newPuzzle = generator.generatePuzzle();
 
-  // Clear UI selection
-  ui.clearSelection();
+    // Load new puzzle (this also clears selection)
+    state.loadPuzzle(newPuzzle);
 
-  // Re-render grid with new puzzle
-  ui.renderGrid(state.getGrid(), state.getErrors(), state.getInitialGrid());
+    // Clear UI selection
+    ui.clearSelection();
 
-  // Show confirmation message
-  ui.showMessage('New puzzle loaded!', 'info');
+    // Re-render grid with new puzzle
+    ui.renderGrid(state.getGrid(), state.getErrors(), state.getInitialGrid());
+
+    // Show success message
+    ui.showMessage('New puzzle loaded!', 'success');
+  } catch (error) {
+    console.error('Puzzle generation failed:', error);
+    ui.showMessage('Puzzle generation failed. Please try again.', 'error');
+  }
+}
+
+/**
+ * Loads a puzzle on initial page load
+ */
+function loadPuzzleOnInit() {
+  ui.showMessage('Generating puzzle...', 'info');
+
+  try {
+    const puzzle = generator.generatePuzzle();
+    state.loadPuzzle(puzzle);
+    ui.renderGrid(state.getGrid(), state.getErrors(), state.getInitialGrid());
+
+    // Hide loading message after successful load
+    setTimeout(() => ui.hideMessage(), 500);
+  } catch (error) {
+    console.error('Initial puzzle generation failed:', error);
+    ui.showMessage('Failed to load puzzle. Click New Puzzle to try again.', 'error');
+  }
 }
 
 /**
  * Initializes the application
  */
 function init() {
-  // Get current state
-  const grid = state.getGrid();
-  const errors = state.getErrors();
-  const initialGrid = state.getInitialGrid();
-
-  // Render the grid
-  ui.renderGrid(grid, errors, initialGrid);
-
   // Attach event listeners
   const gridContainer = document.getElementById('sudoku-grid');
   if (gridContainer) {
@@ -144,6 +164,9 @@ function init() {
   if (newPuzzleBtn) {
     newPuzzleBtn.addEventListener('click', handleNewPuzzle);
   }
+
+  // Generate and load initial puzzle
+  loadPuzzleOnInit();
 }
 
 // Initialize application when DOM is ready
