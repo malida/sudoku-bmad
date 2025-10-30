@@ -130,9 +130,42 @@ function handleCheckSolution() {
 }
 
 /**
+ * Checks if puzzle is currently in progress (has user entries and not complete)
+ * @returns {boolean} True if puzzle has user entries and is not complete
+ */
+function isPuzzleInProgress() {
+  const grid = state.getGrid();
+  const initialGrid = state.getInitialGrid();
+
+  // Check if user has made any entries
+  let hasUserEntries = false;
+  for (let row = 0; row < 9; row++) {
+    for (let col = 0; col < 9; col++) {
+      if (grid[row][col] !== 0 && initialGrid[row][col] === 0) {
+        hasUserEntries = true;
+        break;
+      }
+    }
+    if (hasUserEntries) break;
+  }
+
+  // In progress if has entries AND not complete
+  return hasUserEntries && !state.isGridComplete();
+}
+
+/**
  * Handles New Puzzle button click
  */
 function handleNewPuzzle() {
+  // Check if puzzle is in progress
+  if (isPuzzleInProgress()) {
+    // Show confirmation dialog
+    const confirmed = confirm('Current puzzle will be lost. Start new puzzle?');
+    if (!confirmed) {
+      return; // User cancelled, do nothing
+    }
+  }
+
   // Show loading message
   ui.showMessage('Generating puzzle...', 'info');
 
