@@ -264,15 +264,24 @@ export function hasUniqueSolution(grid) {
  * 5. After each removal, verify the puzzle still has exactly one solution
  * 6. If unique solution: keep the removal
  * 7. If multiple solutions: restore the cell value
- * 8. Continue until target number of clues is reached (~45 clues)
+ * 8. Continue until target number of clues is reached based on difficulty
  *
- * @returns {number[][]} A valid Sudoku puzzle with unique solution (40-50 given clues)
+ * @param {string} difficulty - Difficulty level: 'easy', 'medium', or 'hard' (default: 'medium')
+ * @returns {number[][]} A valid Sudoku puzzle with unique solution
  * @throws {Error} If puzzle generation exceeds 2 seconds
  */
-export function generatePuzzle() {
+export function generatePuzzle(difficulty = 'medium') {
   const startTime = Date.now();
   const TIMEOUT_MS = 2000; // 2 second timeout per NFR1
-  const TARGET_CLUES = 45; // Target number of given clues for moderate difficulty
+
+  // Difficulty to clue count mapping
+  const CLUE_COUNTS = {
+    easy: 55,    // More clues = easier
+    medium: 45,  // Current default
+    hard: 30     // Fewer clues = harder
+  };
+
+  const TARGET_CLUES = CLUE_COUNTS[difficulty] || CLUE_COUNTS.medium;
 
   // Check timeout helper
   function checkTimeout() {

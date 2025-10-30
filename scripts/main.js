@@ -137,8 +137,11 @@ function handleNewPuzzle() {
   ui.showMessage('Generating puzzle...', 'info');
 
   try {
-    // Generate new puzzle
-    const newPuzzle = generator.generatePuzzle();
+    // Get selected difficulty
+    const difficulty = document.getElementById('difficulty').value;
+
+    // Generate new puzzle with selected difficulty
+    const newPuzzle = generator.generatePuzzle(difficulty);
 
     // Load new puzzle (this also clears selection)
     state.loadPuzzle(newPuzzle);
@@ -164,7 +167,9 @@ function loadPuzzleOnInit() {
   ui.showMessage('Generating puzzle...', 'info');
 
   try {
-    const puzzle = generator.generatePuzzle();
+    // Get selected difficulty (defaults to 'medium' if not found)
+    const difficulty = document.getElementById('difficulty')?.value || 'medium';
+    const puzzle = generator.generatePuzzle(difficulty);
     state.loadPuzzle(puzzle);
     ui.renderGrid(state.getGrid(), state.getErrors(), state.getInitialGrid());
 
