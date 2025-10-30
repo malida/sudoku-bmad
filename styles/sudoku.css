@@ -251,6 +251,11 @@ body {
   .btn {
     padding: 10px 20px;
     font-size: 0.9rem;
+    min-height: 44px;
+  }
+
+  .controls {
+    gap: 20px;
   }
 
   .number-pad {
@@ -260,5 +265,104 @@ body {
   .number-pad-btn {
     min-height: 52px;
     font-size: 1.2rem;
+  }
+
+  .game-container {
+    gap: 24px;
+  }
+}
+
+/* Portrait Orientation (Mobile) */
+@media (max-width: 640px) and (orientation: portrait) {
+  .app-container {
+    padding: 16px;
+  }
+
+  .game-container {
+    gap: 20px;
+  }
+
+  .sudoku-grid {
+    max-width: min(90vw, 500px);
+  }
+
+  .controls {
+    flex-direction: column;
+    width: 100%;
+    max-width: 400px;
+    gap: 12px;
+  }
+
+  .btn {
+    width: 100%;
+    min-height: 48px;
+    font-size: 1rem;
+  }
+
+  .number-pad {
+    max-width: min(90vw, 500px);
+  }
+}
+
+/* Landscape Orientation (Mobile) */
+@media (max-width: 896px) and (orientation: landscape) {
+  body {
+    padding: 10px;
+    align-items: flex-start;
+  }
+
+  .app-container {
+    padding: 16px;
+    max-width: 100%;
+  }
+
+  .app-header {
+    margin-bottom: 16px;
+  }
+
+  .app-header h1 {
+    font-size: 1.3rem;
+  }
+
+  .game-container {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .sudoku-grid {
+    max-width: min(50vh, 400px);
+    flex-shrink: 0;
+  }
+
+  .controls {
+    flex-direction: column;
+    width: auto;
+    gap: 12px;
+    align-self: flex-start;
+  }
+
+  .btn {
+    min-width: 160px;
+    min-height: 44px;
+  }
+
+  .number-pad {
+    width: auto;
+    max-width: min(50vh, 400px);
+    gap: 8px;
+    order: -1;
+    flex-basis: 100%;
+  }
+
+  .number-pad-btn {
+    min-height: 48px;
+  }
+
+  .message {
+    order: -2;
+    flex-basis: 100%;
   }
 }
